@@ -1,0 +1,31 @@
+<h2>Produção (para amanhã)</h2>
+
+<form method="POST" action="/salvar">
+<input type="hidden" name="tipo" value="producao">
+
+{% for produto in produtos %}
+  <div>
+    {{ produto[1] }}
+    <button type="button" onclick="diminuir({{ produto[0] }})">-</button>
+    <input type="number" id="produto_{{ produto[0] }}"
+           name="produto_{{ produto[0] }}" value="0" min="0">
+    <button type="button" onclick="aumentar({{ produto[0] }})">+</button>
+  </div>
+{% endfor %}
+
+<br>
+<button type="submit">Salvar Produção</button>
+</form>
+
+<script>
+function aumentar(id){
+  let el = document.getElementById("produto_"+id);
+  el.value = parseInt(el.value) + 1;
+}
+function diminuir(id){
+  let el = document.getElementById("produto_"+id);
+  if(parseInt(el.value) > 0){
+    el.value = parseInt(el.value) - 1;
+  }
+}
+</script>
