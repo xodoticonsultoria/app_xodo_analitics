@@ -1,6 +1,40 @@
-<link rel="manifest" href="/static/manifest.json">
+<!DOCTYPE html>
+<html>
+<head>
+    <title>XODO Operação</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="manifest" href="/static/manifest.json">
+</head>
+<body>
+
+<div class="topbar">
+    <div class="menu-icon" onclick="toggleMenu()">☰</div>
+    <div class="title">Sistema Operação</div>
+</div>
+
+<div id="sidebar" class="sidebar">
+    <a href="/">Início</a>
+    <a href="/producao">Produção</a>
+    <a href="/fechamento">Fechamento</a>
+</div>
+
+<div class="overlay" id="overlay" onclick="toggleMenu()"></div>
+
+<div class="content">
+    {% block content %}{% endblock %}
+</div>
+
 <script>
+function toggleMenu() {
+    document.getElementById("sidebar").classList.toggle("active");
+    document.getElementById("overlay").classList.toggle("active");
+}
+
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('/static/sw.js');
 }
 </script>
+
+</body>
+</html>
