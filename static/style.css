@@ -156,39 +156,6 @@ body {
     cursor: pointer;
 }
 
-/* ===== HAMBURGER ===== */
-.hamburger {
-    width: 28px;
-    height: 3px;
-    background: #ffc107;
-    position: relative;
-}
-
-.hamburger::before,
-.hamburger::after {
-    content: "";
-    position: absolute;
-    width: 28px;
-    height: 3px;
-    background: #ffc107;
-    left: 0;
-}
-
-.hamburger::before { top: -8px; }
-.hamburger::after { top: 8px; }
-
-/* ===== OVERLAY ===== */
-.overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.4);
-    display: none;
-}
-
-.overlay.active {
-    display: block;
-}
-
 /* ===== MENU POPUP ===== */
 .menu-popup {
     position: fixed;
@@ -226,4 +193,92 @@ body {
 .menu-popup button.sair {
     background: #e0e0e0;
     color: black;
+}
+
+
+/* ===== HAMBURGER ===== */
+
+.hamburger {
+    width: 28px;
+    height: 20px;
+    position: relative;
+    cursor: pointer;
+}
+
+.hamburger span {
+    position: absolute;
+    width: 100%;
+    height: 3px;
+    background: #ffc107;
+    left: 0;
+    transition: all 0.3s ease;
+}
+
+.hamburger span:nth-child(1) {
+    top: 0;
+}
+
+.hamburger span:nth-child(2) {
+    top: 8px;
+}
+
+.hamburger span:nth-child(3) {
+    top: 16px;
+}
+
+/* ===== ANIMAÇÃO PARA X ===== */
+
+.hamburger.active span:nth-child(1) {
+    transform: rotate(45deg);
+    top: 8px;
+}
+
+.hamburger.active span:nth-child(2) {
+    opacity: 0;
+}
+
+.hamburger.active span:nth-child(3) {
+    transform: rotate(-45deg);
+    top: 8px;
+}
+
+
+/=====MENU  DESCENDO SUAVE========*/
+.menu-popup {
+    position: absolute;
+    top: 90px;
+    right: 40px;
+    background: #ffc107;
+    width: 260px;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+
+    transform: translateY(-20px);
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.3s ease;
+}
+
+.menu-popup.active {
+    transform: translateY(0);
+    opacity: 1;
+    pointer-events: auto;
+}
+
+
+/*===OVERLAY SUAVE=======*/
+
+.overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.4);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+.overlay.active {
+    opacity: 1;
+    pointer-events: auto;
 }

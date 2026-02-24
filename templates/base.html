@@ -15,9 +15,13 @@
         <img src="{{ url_for('static', filename='icon-192.png') }}" class="logo">
     </a>
 
-    <div class="menu-area" onclick="toggleMenu()">
-        <span>Menu</span>
-        <div class="hamburger"></div>
+     <div class="menu-area" onclick="toggleMenu()">
+        <span id="menuText">Menu</span>
+        <div class="hamburger" id="hamburger">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
     </div>
 </header>
 
@@ -38,8 +42,13 @@
 
 <script>
 function toggleMenu(){
-    document.getElementById("menuPopup").classList.toggle("active");
-    document.getElementById("overlay").classList.toggle("active");
+    const menu = document.getElementById("menuPopup");
+    const overlay = document.getElementById("overlay");
+    const hamburger = document.getElementById("hamburger");
+
+    menu.classList.toggle("active");
+    overlay.classList.toggle("active");
+    hamburger.classList.toggle("active");
 }
 </script>
 
