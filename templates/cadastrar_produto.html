@@ -3,6 +3,16 @@
 
 <h1 class="titulo">Cadastrar Produto</h1>
 
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    {% for message in messages %}
+      <div class="alert-sucesso">
+        {{ message }}
+      </div>
+    {% endfor %}
+  {% endif %}
+{% endwith %}
+
 <form method="POST" action="/produto">
 
 <div style="

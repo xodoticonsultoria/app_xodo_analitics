@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, Response
+from flask import Flask, render_template, request, redirect, Response, flash
 import psycopg2
 from datetime import datetime, timedelta
 import os
@@ -11,6 +11,8 @@ from reportlab.platypus import TableStyle
 from io import BytesIO
 
 app = Flask(__name__)
+
+app.secret_key = "xodo_super_secret"
 
 DATABASE_URL = os.getenv("DATABASE_URL")
 
@@ -30,7 +32,7 @@ def gerar_pdf_relatorio(data, tipo):
         cur.execute("""
             SELECT p.nome, o.produzido
             FROM operacao_diaria o
-            JOIN produtos p ON p.id = o.produzido
+            JOIN produtos p ON p.id = o.produto_id
             WHERE o.data = %s AND o.produzido > 0
         """, (data,))
     else:
@@ -50,40 +52,61 @@ def gerar_pdf_relatorio(data, tipo):
 
     styles = getSampleStyleSheet()
 
-    # LOGO
-    logo_path = os.path.join("static", "logo.png")
+    # =========================
+    # LOGO (CAMINHO CORRETO)
+    # =========================
+    logo_path = os.path.join(app.root_path, "static", "logo.png")
+
     if os.path.exists(logo_path):
-        logo = Image(logo_path, width=2*inch, height=0.8*inch)
+        logo = Image(logo_path, width=2*inch, height=1.2*inch)
         elements.append(logo)
 
     elements.append(Spacer(1, 0.3 * inch))
 
-    # TITULO
-    elements.append(Paragraph(f"<b>Relatório {tipo.capitalize()}</b>", styles['Title']))
-    elements.append(Paragraph(f"Data: {data}", styles['Normal']))
-    elements.append(Spacer(1, 0.3 * inch))
+    # =========================
+    # DATA + HORA
+    # =========================
+    agora = datetime.now()
+    data_formatada = agora.strftime("%d/%m/%Y")
+    hora_formatada = agora.strftime("%H:%M")
 
+    elements.append(Paragraph(
+        f"<b>Relatório {tipo.capitalize()}</b>",
+        styles['Title']
+    ))
+
+    elements.append(Paragraph(
+        f"Data: {data_formatada}",
+        styles['Normal']
+    ))
+
+    elements.append(Paragraph(
+        f"Hora: {hora_formatada}",
+        styles['Normal']
+    ))
+
+    elements.append(Spacer(1, 0.4 * inch))
+
+    # =========================
+    # TABELA
+    # =========================
     tabela_dados = [["Produto", "Quantidade"]]
-    total_geral = 0
 
     for item in dados:
         tabela_dados.append([item[0], str(item[1])])
-        total_geral += item[1]
-
-    tabela_dados.append(["TOTAL GERAL", str(total_geral)])
 
     tabela = Table(tabela_dados, colWidths=[4*inch, 1.5*inch])
+
     tabela.setStyle(TableStyle([
-        # Cabeçalho vermelho
-        ('BACKGROUND', (0,0), (-1,0), colors.HexColor("#b71c1c")),
-        ('TEXTCOLOR', (0,0), (-1,0), colors.white),
+        # Cabeçalho vermelho Xodó
+        ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor("#b71c1c")),
+        ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
 
-        # Total destacado
-        ('BACKGROUND', (0,-1), (-1,-1), colors.HexColor("#ffe6e6")),
-        ('TEXTCOLOR', (0,-1), (-1,-1), colors.red),
+        # Bordas
+        ('GRID', (0, 0), (-1, -1), 1, colors.black),
 
-        ('GRID', (0,0), (-1,-1), 1, colors.black),
-        ('ALIGN',(1,1),(-1,-1),'CENTER'),
+        # Centralizar coluna quantidade
+        ('ALIGN', (1, 1), (-1, -1), 'CENTER'),
     ]))
 
     elements.append(tabela)
@@ -92,7 +115,6 @@ def gerar_pdf_relatorio(data, tipo):
     buffer.seek(0)
 
     return buffer
-
 # ======================================
 # ROTAS
 # ======================================
@@ -180,6 +202,7 @@ def produto():
                 (nome,)
             )
             conn.commit()
+            flash("🎉 Parabéns! Produto salvo com sucesso.")
 
         cur.close()
         conn.close()
