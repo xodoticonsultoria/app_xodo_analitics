@@ -3,8 +3,7 @@ import psycopg2
 from datetime import datetime, timedelta
 import os
 
-from dotenv import load_dotenv
-load_dotenv()
+
 
 app = Flask(__name__)
 
