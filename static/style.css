@@ -247,3 +247,34 @@ body {
     from { opacity: 0; transform: translateY(-5px); }
     to { opacity: 1; transform: translateY(0); }
 }
+
+
+/* ===== FORM PRODUTO MOBILE FIX ===== */
+.form-produto {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.form-produto input {
+    flex: 1;
+    min-width: 150px;
+}
+
+.form-produto button {
+    white-space: nowrap;
+}
+
+@media (max-width: 768px) {
+    .form-produto {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .form-produto button {
+        width: 100%;
+        margin-top: 10px;
+    }
+}
