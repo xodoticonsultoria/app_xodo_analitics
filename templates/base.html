@@ -45,10 +45,14 @@ function toggleMenu(){
     const menu = document.getElementById("menuPopup");
     const overlay = document.getElementById("overlay");
     const hamburger = document.getElementById("hamburger");
+    const menuArea = document.querySelector(".menu-area");
+    const container = document.querySelector(".container");
 
     menu.classList.toggle("active");
     overlay.classList.toggle("active");
     hamburger.classList.toggle("active");
+    menuArea.classList.toggle("active");
+    container.classList.toggle("blur-content");
 }
 </script>
 

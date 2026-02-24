@@ -9,13 +9,12 @@
 <div class="grid">
     {% for produto in produtos %}
     <div class="card">
+
         <span>{{ produto[1] }}</span>
 
         <div class="contador">
             <button type="button" onclick="diminuir({{ produto[0] }})">-</button>
-
             <span class="numero" id="display_{{ produto[0] }}">0</span>
-
             <button type="button" onclick="aumentar({{ produto[0] }})">+</button>
 
             <input type="hidden"
@@ -23,6 +22,7 @@
                    name="produto_{{ produto[0] }}"
                    value="0">
         </div>
+
     </div>
     {% endfor %}
 </div>
@@ -32,5 +32,37 @@ Gerar Fechamento
 </button>
 
 </form>
+
+<script>
+
+function aumentar(id){
+    let input = document.getElementById("produto_"+id);
+    let display = document.getElementById("display_"+id);
+
+    if(!input || !display) return;
+
+    let valor = parseInt(input.value) || 0;
+    valor++;
+
+    input.value = valor;
+    display.innerText = valor;
+}
+
+function diminuir(id){
+    let input = document.getElementById("produto_"+id);
+    let display = document.getElementById("display_"+id);
+
+    if(!input || !display) return;
+
+    let valor = parseInt(input.value) || 0;
+
+    if(valor > 0){
+        valor--;
+        input.value = valor;
+        display.innerText = valor;
+    }
+}
+
+</script>
 
 {% endblock %}

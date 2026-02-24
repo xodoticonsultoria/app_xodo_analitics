@@ -2,8 +2,12 @@
     box-sizing: border-box;
 }
 
-body {
+html, body {
     margin: 0;
+    padding: 0;
+}
+
+body {
     font-family: 'Segoe UI', Arial, sans-serif;
     background: #dddddd;
 }
@@ -15,21 +19,131 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0 70px;
+    padding: 0 60px;
+    position: relative;
+    z-index: 100;
 }
 
 .logo {
-    height: 100px;
+    height: 55px;
 }
 
+/* ===== MENU AREA ===== */
 .menu-area {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 10px;
     color: white;
     font-weight: 600;
     font-size: 16px;
     cursor: pointer;
+}
+
+.menu-area span {
+    transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.menu-area.active span {
+    transform: rotate(-5deg);
+    opacity: 0.85;
+}
+
+/* ===== HAMBURGER ===== */
+.hamburger {
+    width: 28px;
+    height: 20px;
+    position: relative;
+}
+
+.hamburger span {
+    position: absolute;
+    width: 100%;
+    height: 3px;
+    background: #ffc107;
+    left: 0;
+    border-radius: 2px;
+    transition: all 0.35s cubic-bezier(.68,-0.55,.27,1.55);
+}
+
+.hamburger span:nth-child(1) { top: 0; }
+.hamburger span:nth-child(2) { top: 8px; }
+.hamburger span:nth-child(3) { top: 16px; }
+
+.hamburger.active span:nth-child(1) {
+    transform: rotate(45deg);
+    top: 8px;
+}
+
+.hamburger.active span:nth-child(2) {
+    opacity: 0;
+}
+
+.hamburger.active span:nth-child(3) {
+    transform: rotate(-45deg);
+    top: 8px;
+}
+
+/* ===== OVERLAY ===== */
+.overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.35);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+    z-index: 50;
+}
+
+.overlay.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+/* ===== MENU POPUP ===== */
+.menu-popup {
+    position: fixed;
+    top: 95px;
+    right: 60px;
+    background: #ffc107;
+    width: 260px;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+
+    transform: translateY(-20px);
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.3s ease;
+
+    z-index: 120;
+}
+
+.menu-popup.active {
+    transform: translateY(0);
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.menu-popup .menu-header {
+    font-weight: bold;
+    margin-bottom: 15px;
+}
+
+.menu-popup button {
+    width: 100%;
+    margin-bottom: 12px;
+    padding: 10px;
+    border: none;
+    border-radius: 6px;
+    font-weight: bold;
+    background: #b71c1c;
+    color: white;
+    cursor: pointer;
+}
+
+.menu-popup button.sair {
+    background: #e0e0e0;
+    color: black;
 }
 
 /* ===== CONTAINER ===== */
@@ -65,13 +179,12 @@ body {
     box-shadow: 0 4px 6px rgba(0,0,0,0.15);
 }
 
-/* TEXTO PRODUTO */
 .card span {
     font-size: 14px;
     font-weight: 600;
 }
 
-/* CONTADOR */
+/* ===== CONTADOR ===== */
 .contador {
     display: flex;
     align-items: center;
@@ -98,7 +211,7 @@ body {
     font-size: 16px;
 }
 
-/* BOTÃO PRINCIPAL */
+/* ===== BOTÃO PRINCIPAL ===== */
 .botao-principal {
     display: block;
     margin: 60px auto;
@@ -111,174 +224,9 @@ body {
     box-shadow: 0 3px 5px rgba(0,0,0,0.2);
 }
 
-/* MOBILE */
+/* ===== MOBILE ===== */
 @media (max-width: 768px) {
-
-    .topbar {
-        padding: 0 20px;
-    }
-
-    .grid {
-        grid-template-columns: 1fr;
-        gap: 18px;
-    }
-
-    .container {
-        padding: 0 15px;
-    }
-}
-
-
-
-/* ===== NAVBAR ===== */
-.topbar {
-    height: 85px;
-    background: linear-gradient(90deg, #b71c1c, #f4511e);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0 60px;
-    position: relative;
-}
-
-.logo {
-    height: 55px;
-}
-
-/* ===== MENU AREA ===== */
-.menu-area {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    color: white;
-    font-weight: 600;
-    font-size: 16px;
-    cursor: pointer;
-}
-
-/* ===== MENU POPUP ===== */
-.menu-popup {
-    position: fixed;
-    top: 95px;
-    right: 60px;
-    background: #ffc107;
-    width: 260px;
-    padding: 25px;
-    border-radius: 12px;
-    display: none;
-    box-shadow: 0 10px 20px rgba(0,0,0,0.25);
-}
-
-.menu-popup.active {
-    display: block;
-}
-
-.menu-popup .menu-header {
-    font-weight: bold;
-    margin-bottom: 15px;
-}
-
-.menu-popup button {
-    width: 100%;
-    margin-bottom: 12px;
-    padding: 10px;
-    border: none;
-    border-radius: 6px;
-    font-weight: bold;
-    background: #b71c1c;
-    color: white;
-    cursor: pointer;
-}
-
-.menu-popup button.sair {
-    background: #e0e0e0;
-    color: black;
-}
-
-
-/* ===== HAMBURGER ===== */
-
-.hamburger {
-    width: 28px;
-    height: 20px;
-    position: relative;
-    cursor: pointer;
-}
-
-.hamburger span {
-    position: absolute;
-    width: 100%;
-    height: 3px;
-    background: #ffc107;
-    left: 0;
-    transition: all 0.3s ease;
-}
-
-.hamburger span:nth-child(1) {
-    top: 0;
-}
-
-.hamburger span:nth-child(2) {
-    top: 8px;
-}
-
-.hamburger span:nth-child(3) {
-    top: 16px;
-}
-
-/* ===== ANIMAÇÃO PARA X ===== */
-
-.hamburger.active span:nth-child(1) {
-    transform: rotate(45deg);
-    top: 8px;
-}
-
-.hamburger.active span:nth-child(2) {
-    opacity: 0;
-}
-
-.hamburger.active span:nth-child(3) {
-    transform: rotate(-45deg);
-    top: 8px;
-}
-
-
-/=====MENU  DESCENDO SUAVE========*/
-.menu-popup {
-    position: absolute;
-    top: 90px;
-    right: 40px;
-    background: #ffc107;
-    width: 260px;
-    padding: 25px;
-    border-radius: 12px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.25);
-
-    transform: translateY(-20px);
-    opacity: 0;
-    pointer-events: none;
-    transition: all 0.3s ease;
-}
-
-.menu-popup.active {
-    transform: translateY(0);
-    opacity: 1;
-    pointer-events: auto;
-}
-
-
-/*===OVERLAY SUAVE=======*/
-
-.overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.4);
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.3s ease;
-}
-
-.overlay.active {
-    opacity: 1;
-    pointer-events: auto;
+    .topbar { padding: 0 20px; }
+    .grid { grid-template-columns: 1fr; gap: 18px; }
+    .container { padding: 0 15px; }
 }
