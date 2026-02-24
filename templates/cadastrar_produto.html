@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h1 class="titulo">Cadastrar Produto</h1>
+
+<form method="POST" action="/produto">
+
+<div style="
+    max-width:600px;
+    margin: 80px auto;
+    background:white;
+    border:2px solid #c71f1f;
+    padding:30px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    box-shadow:0 8px 15px rgba(0,0,0,0.15);
+">
+
+    <label style="font-size:18px;">Nome Produto:</label>
+
+    <input type="text" name="nome" required
+           style="padding:10px; width:220px;">
+
+    <button type="submit"
+            style="background:#c71f1f;
+                   color:white;
+                   border:none;
+                   padding:12px 25px;
+                   font-weight:bold;">
+        CADASTRAR
+    </button>
+
+</div>
+
+</form>
+
+{% endblock %}

@@ -1,60 +1,53 @@
 {% extends "base.html" %}
 {% block content %}
 
-<h2>Produção (para amanhã)</h2>
+<h1 class="titulo">Produção Diária</h1>
 
-<form method="POST" action="/salvar" onsubmit="return bloquearBotao(this)">
+<form method="POST" action="/salvar">
 <input type="hidden" name="tipo" value="producao">
 
-{% for produto in produtos %}
-<div class="produto">
-    <span>{{ produto[1] }}</span>
+<div class="grid">
+    {% for produto in produtos %}
+    <div class="card">
+        <span>{{ produto[1] }}</span>
 
-    <div class="contador">
-        <button type="button" onclick="diminuir({{ produto[0] }})">-</button>
+        <div class="contador">
+            <button type="button" onclick="diminuir({{ produto[0] }})">-</button>
 
-        <input type="number"
-               id="produto_{{ produto[0] }}"
-               name="produto_{{ produto[0] }}"
-               value="0" min="0" readonly>
+            <span class="numero" id="display_{{ produto[0] }}">0</span>
 
-        <button type="button" onclick="aumentar({{ produto[0] }})">+</button>
+            <button type="button" onclick="aumentar({{ produto[0] }})">+</button>
+
+            <input type="hidden"
+                   id="produto_{{ produto[0] }}"
+                   name="produto_{{ produto[0] }}"
+                   value="0">
+        </div>
     </div>
+    {% endfor %}
 </div>
-{% endfor %}
 
-<button type="submit" class="salvar" id="btnSalvar">
-Salvar Produção
+<button type="submit" class="botao-principal">
+Gerar Produção
 </button>
 
 </form>
 
 <script>
-function vibrar() {
-    if (navigator.vibrate) {
-        navigator.vibrate(30);
-    }
-}
-
 function aumentar(id){
-  let el = document.getElementById("produto_"+id);
-  el.value = parseInt(el.value) + 1;
-  vibrar();
+    let input = document.getElementById("produto_"+id);
+    let display = document.getElementById("display_"+id);
+    input.value = parseInt(input.value) + 1;
+    display.innerText = input.value;
 }
 
 function diminuir(id){
-  let el = document.getElementById("produto_"+id);
-  if(parseInt(el.value) > 0){
-    el.value = parseInt(el.value) - 1;
-    vibrar();
-  }
-}
-
-function bloquearBotao(form){
-    let btn = document.getElementById("btnSalvar");
-    btn.innerText = "Salvando...";
-    btn.disabled = true;
-    return true;
+    let input = document.getElementById("produto_"+id);
+    let display = document.getElementById("display_"+id);
+    if(parseInt(input.value) > 0){
+        input.value = parseInt(input.value) - 1;
+        display.innerText = input.value;
+    }
 }
 </script>
 

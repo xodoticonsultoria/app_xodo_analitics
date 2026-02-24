@@ -1,3 +1,36 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h1 class="titulo">Fechamento</h1>
+
+<form method="POST" action="/salvar">
 <input type="hidden" name="tipo" value="fechamento">
-<h2>Fechamento (hoje)</h2>
-<button type="submit">Salvar Fechamento</button>
+
+<div class="grid">
+    {% for produto in produtos %}
+    <div class="card">
+        <span>{{ produto[1] }}</span>
+
+        <div class="contador">
+            <button type="button" onclick="diminuir({{ produto[0] }})">-</button>
+
+            <span class="numero" id="display_{{ produto[0] }}">0</span>
+
+            <button type="button" onclick="aumentar({{ produto[0] }})">+</button>
+
+            <input type="hidden"
+                   id="produto_{{ produto[0] }}"
+                   name="produto_{{ produto[0] }}"
+                   value="0">
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<button type="submit" class="botao-principal">
+Gerar Fechamento
+</button>
+
+</form>
+
+{% endblock %}

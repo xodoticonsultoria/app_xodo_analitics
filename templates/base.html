@@ -1,40 +1,50 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-br">
 <head>
-    <title>XODO Operação</title>
+    <meta charset="UTF-8">
+    <title>XODÓ Sistema</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/static/style.css">
-    <link rel="manifest" href="/static/manifest.json">
+    <meta name="theme-color" content="#c71f1f">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
+
 <body>
 
-<div class="topbar">
-    <div class="menu-icon" onclick="toggleMenu()">☰</div>
-    <div class="title">Sistema Operação</div>
+<header class="topbar">
+    <a href="/">
+        <img src="{{ url_for('static', filename='icon-192.png') }}" class="logo">
+    </a>
+
+    <div class="menu-area" onclick="toggleMenu()">
+        <span>Menu</span>
+        <div class="hamburger"></div>
+    </div>
+</header>
+
+<div id="overlay" class="overlay" onclick="toggleMenu()"></div>
+
+<div id="menuPopup" class="menu-popup">
+    <div class="menu-header">Nome: test</div>
+
+    <button onclick="location.href='/fechamento'">Fechamento</button>
+    <button onclick="location.href='/producao'">Produção</button>
+    <button onclick="location.href='/produto'">Cadastrar Produto</button>
+    <button class="sair">Sair</button>
 </div>
 
-<div id="sidebar" class="sidebar">
-    <a href="/">Início</a>
-    <a href="/producao">Produção</a>
-    <a href="/fechamento">Fechamento</a>
-</div>
-
-<div class="overlay" id="overlay" onclick="toggleMenu()"></div>
-
-<div class="content">
+<main class="container">
     {% block content %}{% endblock %}
-</div>
+</main>
 
 <script>
-function toggleMenu() {
-    document.getElementById("sidebar").classList.toggle("active");
+function toggleMenu(){
+    document.getElementById("menuPopup").classList.toggle("active");
     document.getElementById("overlay").classList.toggle("active");
 }
-
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('/static/sw.js');
-}
 </script>
+
+
+
 
 </body>
 </html>

@@ -3,6 +3,9 @@ import psycopg2
 from datetime import datetime, timedelta
 import os
 
+from dotenv import load_dotenv
+load_dotenv()
+
 app = Flask(__name__)
 
 DATABASE_URL = os.getenv("DATABASE_URL")
@@ -67,3 +70,23 @@ def salvar():
     conn.close()
 
     return redirect("/")
+
+
+@app.route("/produto", methods=["GET", "POST"])
+def produto():
+    conn = get_connection()
+    cur = conn.cursor()
+
+    if request.method == "POST":
+        nome = request.form.get("nome")
+        if nome:
+            cur.execute(
+                "INSERT INTO produtos (nome, ativo) VALUES (%s, TRUE);",
+                (nome,)
+            )
+            conn.commit()
+        return redirect("/produto")
+
+    cur.close()
+    conn.close()
+    return render_template("cadastrar_produto.html")
