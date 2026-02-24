@@ -3,20 +3,39 @@
 
 <h1 class="titulo">Cadastrar Produto</h1>
 
-{% with messages = get_flashed_messages() %}
-  {% if messages %}
-    {% for message in messages %}
-      <div class="alert-sucesso">
-        {{ message }}
-      </div>
-    {% endfor %}
-  {% endif %}
-{% endwith %}
+<div class="card-form">
 
-<form method="POST" class="form-produto">
-    <label>Nome Produto:</label>
-    <input type="text" name="nome" required>
-    <button type="submit">Cadastrar</button>
-</form>
+    <form method="POST">
+        <div class="form-group">
+            <label>Nome Produto:</label>
+            <input type="text" name="nome" required>
+            <button type="submit" class="btn-vermelho">
+                Cadastrar
+            </button>
+        </div>
+    </form>
+
+</div>
+
+{% if produtos %}
+<div class="lista-produtos">
+    <h2 class="subtitulo">Produtos Cadastrados</h2>
+
+    {% for p in produtos %}
+    <div class="produto-item">
+        <form method="POST">
+            <input type="hidden" name="id" value="{{ p[0] }}">
+            <input type="text" name="nome" value="{{ p[1] }}">
+            <button type="submit">Salvar</button>
+        </form>
+
+        <a href="/produto_status/{{ p[0] }}"
+           class="btn-status {{ 'ativo' if p[2] else 'inativo' }}">
+           {{ 'Ativo' if p[2] else 'Inativo' }}
+        </a>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
 
 {% endblock %}

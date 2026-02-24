@@ -280,3 +280,115 @@ body {
         margin-top: 10px;
     }
 }
+
+
+/* ===== FORM PRODUTO ===== */
+
+.card-form {
+    background: #ffffff;
+    padding: 30px;
+    border: 2px solid #b71c1c;
+    box-shadow: 0 6px 15px rgba(0,0,0,0.2);
+    max-width: 600px;
+    margin: 0 auto 40px auto;
+}
+
+.form-group {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.form-group label {
+    font-weight: 600;
+}
+
+.form-group input {
+    flex: 1;
+    padding: 8px;
+    border: 1px solid #ccc;
+}
+
+.btn-vermelho {
+    background: #b71c1c;
+    color: white;
+    border: none;
+    padding: 8px 18px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.btn-vermelho:hover {
+    background: #8e0000;
+}
+
+/* ===== LISTA PRODUTOS ===== */
+
+.lista-produtos {
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+.subtitulo {
+    color: #7a1515;
+    margin-bottom: 20px;
+}
+
+.produto-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: white;
+    padding: 10px 15px;
+    border: 1px solid #ccc;
+    margin-bottom: 10px;
+}
+
+.produto-item form {
+    display: flex;
+    gap: 10px;
+    flex: 1;
+}
+
+.produto-item input {
+    flex: 1;
+    padding: 6px;
+}
+
+.btn-editar {
+    background: #ffc107;
+    border: none;
+    padding: 6px 12px;
+    cursor: pointer;
+}
+
+.btn-status {
+    padding: 6px 12px;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.btn-status.ativo {
+    color: green;
+}
+
+.btn-status.inativo {
+    color: red;
+}
+
+/* ===== MOBILE ===== */
+
+@media (max-width: 768px) {
+
+    .form-group {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .produto-item {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+    }
+
+}

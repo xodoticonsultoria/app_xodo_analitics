@@ -194,23 +194,37 @@ def produto():
     cur = conn.cursor()
 
     if request.method == "POST":
+
+        produto_id = request.form.get("id")
         nome = request.form.get("nome")
 
-        if nome:
+        if produto_id:  # 👉 SE EXISTE ID = EDITAR
+            cur.execute(
+                "UPDATE produtos SET nome = %s WHERE id = %s;",
+                (nome, produto_id)
+            )
+            flash("✏️ Produto atualizado com sucesso!")
+
+        elif nome:  # 👉 SE NÃO TEM ID = NOVO PRODUTO
             cur.execute(
                 "INSERT INTO produtos (nome, ativo) VALUES (%s, TRUE);",
                 (nome,)
             )
-            conn.commit()
             flash("🎉 Parabéns! Produto salvo com sucesso.")
 
+        conn.commit()
         cur.close()
         conn.close()
+
         return redirect("/produto")
+
+    # 👉 LISTAR PRODUTOS
+    cur.execute("SELECT id, nome, ativo FROM produtos ORDER BY nome;")
+    produtos = cur.fetchall()
 
     cur.close()
     conn.close()
-    return render_template("cadastrar_produto.html")
 
+    return render_template("cadastrar_produto.html", produtos=produtos)
 if __name__ == "__main__":
     app.run(debug=True)
