@@ -265,6 +265,8 @@ body {
 
 .form-produto button {
     white-space: nowrap;
+
+
 }
 
 @media (max-width: 768px) {
