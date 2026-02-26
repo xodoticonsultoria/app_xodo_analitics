@@ -141,12 +141,9 @@ def fechamento():
 
 
 
-@app.route("/salvar", methods=["GET", "POST"])
+@app.route("/salvar", methods=["POST"])
 @login_required
 def salvar():
-
-    if request.method == "GET":
-        return redirect("/")  # evita 405
 
     tipo = request.form.get("tipo")
 
@@ -179,6 +176,14 @@ def salvar():
 
     conn.commit()
     conn.close()
+
+    # redireciona para rota GET do PDF
+    return redirect(f"/pdf/{tipo}/{data}")
+
+
+@app.route("/pdf/<tipo>/<data>")
+@login_required
+def gerar_pdf(tipo, data):
 
     pdf_buffer = gerar_pdf_relatorio(data, tipo)
 
