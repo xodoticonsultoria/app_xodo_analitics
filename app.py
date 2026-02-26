@@ -141,11 +141,12 @@ def fechamento():
 
 
 
-@app.route("/salvar", methods=["POST"])
+@app.route("/salvar", methods=["GET", "POST"])
 @login_required
 def salvar():
+
     if request.method == "GET":
-        return redirect("/")
+        return redirect("/")  # evita 405
 
     tipo = request.form.get("tipo")
 
