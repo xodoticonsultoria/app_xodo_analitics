@@ -3,6 +3,7 @@ import psycopg2
 from datetime import datetime, timedelta
 import os
 from functools import wraps
+import pytz
 
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, Image
 from reportlab.lib import colors
@@ -16,22 +17,16 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # ======================================
-# CONFIGURAÇÃO INICIAL
+# CONFIGURAÇÃO
 # ======================================
-
-
 
 app = Flask(__name__)
 app.secret_key = "xodo_super_secret"
 
 DATABASE_URL = os.getenv("DATABASE_URL")
 
-
-
 def get_connection():
     return psycopg2.connect(DATABASE_URL)
-
-
 
 # ======================================
 # LOGIN REQUIRED
@@ -85,17 +80,22 @@ def gerar_pdf_relatorio(data, tipo):
 
     elements.append(Spacer(1, 0.3 * inch))
 
-    agora = datetime.now()
+    # FUSO BRASIL
+    fuso = pytz.timezone("America/Sao_Paulo")
+    agora = datetime.now(fuso)
+
     elements.append(Paragraph(f"<b>Lista {tipo.capitalize()}</b>", styles['Title']))
     elements.append(Paragraph(f"Data: {agora.strftime('%d/%m/%Y')}", styles['Normal']))
     elements.append(Paragraph(f"Hora: {agora.strftime('%H:%M')}", styles['Normal']))
     elements.append(Paragraph(
-        f"Operador: {session.get('username')}",
+        f"Operador: {session.get('username')} | Filial: {session.get('filial_nome')}",
         styles['Normal']
     ))
+
     elements.append(Spacer(1, 0.4 * inch))
 
     tabela_dados = [["Produto", "Quantidade"]]
+
     for item in dados:
         tabela_dados.append([item[0], str(item[1])])
 
@@ -114,7 +114,16 @@ def gerar_pdf_relatorio(data, tipo):
     return buffer
 
 # ======================================
-# ROTAS
+# HOME
+# ======================================
+
+@app.route("/")
+@login_required
+def index():
+    return render_template("index.html")
+
+# ======================================
+# PRODUÇÃO / FECHAMENTO
 # ======================================
 
 @app.route("/producao")
@@ -127,8 +136,6 @@ def producao():
     conn.close()
     return render_template("producao.html", produtos=produtos)
 
-
-
 @app.route("/fechamento")
 @login_required
 def fechamento():
@@ -139,7 +146,9 @@ def fechamento():
     conn.close()
     return render_template("fechamento.html", produtos=produtos)
 
-
+# ======================================
+# SALVAR
+# ======================================
 
 @app.route("/salvar", methods=["POST"])
 @login_required
@@ -154,6 +163,12 @@ def salvar():
 
     conn = get_connection()
     cur = conn.cursor()
+
+    # 🔥 LIMPA O DIA ANTES (evita duplicação)
+    cur.execute("""
+        DELETE FROM operacao_diaria
+        WHERE data = %s
+    """, (data,))
 
     for key in request.form:
         if key.startswith("produto_"):
@@ -177,9 +192,11 @@ def salvar():
     conn.commit()
     conn.close()
 
-    # redireciona para rota GET do PDF
     return redirect(f"/pdf/{tipo}/{data}")
 
+# ======================================
+# ROTA PDF
+# ======================================
 
 @app.route("/pdf/<tipo>/<data>")
 @login_required
@@ -196,6 +213,10 @@ def gerar_pdf(tipo, data):
         }
     )
 
+# ======================================
+# PRODUTOS
+# ======================================
+
 @app.route("/produto", methods=["GET", "POST"])
 @login_required
 def produto():
@@ -204,60 +225,30 @@ def produto():
     cur = conn.cursor()
 
     if request.method == "POST":
-
         produto_id = request.form.get("id")
         nome = request.form.get("nome")
 
         if produto_id:
-            cur.execute(
-                "UPDATE produtos SET nome = %s WHERE id = %s;",
-                (nome, produto_id)
-            )
-            flash("✏️ Produto atualizado com sucesso!")
+            cur.execute("UPDATE produtos SET nome = %s WHERE id = %s;", (nome, produto_id))
+            flash("Produto atualizado com sucesso!")
 
         elif nome:
-            cur.execute(
-                "INSERT INTO produtos (nome, ativo) VALUES (%s, TRUE);",
-                (nome,)
-            )
-            flash("🎉 Parabéns! Produto salvo com sucesso.")
+            cur.execute("INSERT INTO produtos (nome, ativo) VALUES (%s, TRUE);", (nome,))
+            flash("Produto salvo com sucesso!")
 
         conn.commit()
-        cur.close()
         conn.close()
         return redirect("/produto")
 
     cur.execute("SELECT id, nome, ativo FROM produtos ORDER BY nome;")
     produtos = cur.fetchall()
-    cur.close()
     conn.close()
 
     return render_template("cadastrar_produto.html", produtos=produtos)
 
-## ==============================
-# LOGIN REQUIRED
-# ==============================
-
-def login_required(f):
-    @wraps(f)
-    def decorated_function(*args, **kwargs):
-        if "user_id" not in session:
-            return redirect("/login")
-        return f(*args, **kwargs)
-    return decorated_function
-
-# ==============================
-# HOME
-# ==============================
-
-@app.route("/")
-@login_required
-def index():
-    return render_template("index.html")
-
-# ==============================
+# ======================================
 # REGISTER
-# ==============================
+# ======================================
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
@@ -281,7 +272,7 @@ def register():
         conn.close()
 
         flash("Usuário cadastrado com sucesso! 🎉")
-        return redirect("/register")  # fica na mesma página
+        return redirect("/register")
 
     cur.execute("SELECT id, nome FROM filiais ORDER BY nome;")
     filiais = cur.fetchall()
@@ -289,9 +280,9 @@ def register():
 
     return render_template("register.html", filiais=filiais)
 
-# ==============================
+# ======================================
 # LOGIN
-# ==============================
+# ======================================
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
@@ -314,20 +305,18 @@ def login():
         conn.close()
 
         if user and check_password_hash(user[2], senha):
-
             session["user_id"] = user[0]
             session["username"] = user[1]
             session["filial_nome"] = user[3]
-
             return redirect("/")
 
         flash("Usuário ou senha inválidos")
 
     return render_template("login.html")
 
-# ==============================
+# ======================================
 # LOGOUT
-# ==============================
+# ======================================
 
 @app.route("/logout")
 def logout():
