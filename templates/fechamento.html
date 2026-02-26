@@ -13,9 +13,7 @@
 
         <div class="contador">
             <button type="button" onclick="diminuir({{ produto[0] }})">-</button>
-
             <span class="numero" id="display_{{ produto[0] }}">0</span>
-
             <button type="button" onclick="aumentar({{ produto[0] }})">+</button>
 
             <input type="hidden"
@@ -27,39 +25,10 @@
     {% endfor %}
 </div>
 
-<button type="button" class="botao-principal" onclick="abrirPdf('formFechamento')">
-Gerar Fechamento
+<button type="submit" class="botao-principal">
+Gerar Produção
 </button>
 
 </form>
-
-<script>
-function aumentar(id){
-    let input = document.getElementById("produto_"+id);
-    let display = document.getElementById("display_"+id);
-    let valor = parseInt(input.value) || 0;
-    valor++;
-    input.value = valor;
-    display.innerText = valor;
-}
-
-function diminuir(id){
-    let input = document.getElementById("produto_"+id);
-    let display = document.getElementById("display_"+id);
-    let valor = parseInt(input.value) || 0;
-    if(valor > 0){
-        valor--;
-        input.value = valor;
-        display.innerText = valor;
-    }
-}
-
-function abrirPdf(formId){
-    const form = document.getElementById(formId);
-    form.target = "_blank";
-    form.submit();
-    form.target = "";
-}
-</script>
 
 {% endblock %}
