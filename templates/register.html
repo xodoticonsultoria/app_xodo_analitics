@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="login-wrapper">
+    <div class="login-card">
+
+        <div class="login-left">
+            <img src="{{ url_for('static', filename='logo.png') }}" class="login-logo">
+            <p>Crie sua conta e comece 🚀</p>
+        </div>
+
+        <div class="login-right">
+            <h2>Cadastrar</h2>
+
+            {% with messages = get_flashed_messages() %}
+              {% if messages %}
+                <div class="flash-success">
+                  {{ messages[0] }}
+                </div>
+              {% endif %}
+            {% endwith %}
+
+            <form method="POST">
+
+                <label>Usuário</label>
+                <input type="text" name="username" required>
+
+                <label>Senha</label>
+                <input type="password" name="senha" required>
+
+                <label>Filial</label>
+                <select name="filial" required>
+                    {% for filial in filiais %}
+                        <option value="{{ filial[0] }}">{{ filial[1] }}</option>
+                    {% endfor %}
+                </select>
+
+                <button type="submit">Criar conta</button>
+            </form>
+
+            <div class="login-extra">
+                <span>Já tem conta?</span>
+                <a href="/login" class="btn-register">Voltar para login</a>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+{% endblock %}

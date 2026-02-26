@@ -31,16 +31,21 @@
     </div>
 </header>
 
+{% if session.get("user_id") %}
 <div id="overlay" class="overlay" onclick="toggleMenu()"></div>
 
 <div id="menuPopup" class="menu-popup">
-    <div class="menu-header">Nome: test</div>
+    <div class="menu-header">
+        👤 {{ session.get("username") }} <br>
+        🏢 {{ session.get("filial_nome") }}
+    </div>
 
     <button onclick="location.href='/fechamento'">Fechamento</button>
     <button onclick="location.href='/producao'">Produção</button>
     <button onclick="location.href='/produto'">Cadastrar Produto</button>
-    <button class="sair">Sair</button>
+    <button onclick="location.href='/logout'" class="sair">Sair</button>
 </div>
+{% endif %}
 
 <main class="container">
     {% block content %}{% endblock %}
