@@ -3,8 +3,7 @@
 
 <h1 class="titulo">Produção Diária</h1>
 
-
-<form method="POST" action="/salvar">
+<form id="formProducao" method="POST" action="/salvar">
 <input type="hidden" name="tipo" value="producao">
 
 <div class="grid">
@@ -28,11 +27,7 @@
     {% endfor %}
 </div>
 
-<div id="mensagem" style="display:none; color: green; font-weight:bold; margin-bottom:15px;">
-Relatório gerado com sucesso!
-</div>
-
-<button type="submit" class="botao-principal" onclick="mostrarMensagem()">
+<button type="button" class="botao-principal" onclick="abrirPdf('formProducao')">
 Gerar Produção
 </button>
 
@@ -53,6 +48,13 @@ function diminuir(id){
         input.value = parseInt(input.value) - 1;
         display.innerText = input.value;
     }
+}
+
+function abrirPdf(formId){
+    const form = document.getElementById(formId);
+    form.target = "_blank";
+    form.submit();
+    form.target = "";
 }
 </script>
 

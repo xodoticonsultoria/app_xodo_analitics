@@ -86,7 +86,7 @@ def gerar_pdf_relatorio(data, tipo):
     elements.append(Spacer(1, 0.3 * inch))
 
     agora = datetime.now()
-    elements.append(Paragraph(f"<b>Relatório {tipo.capitalize()}</b>", styles['Title']))
+    elements.append(Paragraph(f"<b>Lista {tipo.capitalize()}</b>", styles['Title']))
     elements.append(Paragraph(f"Data: {agora.strftime('%d/%m/%Y')}", styles['Normal']))
     elements.append(Paragraph(f"Hora: {agora.strftime('%H:%M')}", styles['Normal']))
     elements.append(Paragraph(
@@ -127,6 +127,8 @@ def producao():
     conn.close()
     return render_template("producao.html", produtos=produtos)
 
+
+
 @app.route("/fechamento")
 @login_required
 def fechamento():
@@ -136,6 +138,8 @@ def fechamento():
     produtos = cur.fetchall()
     conn.close()
     return render_template("fechamento.html", produtos=produtos)
+
+
 
 @app.route("/salvar", methods=["POST"])
 @login_required

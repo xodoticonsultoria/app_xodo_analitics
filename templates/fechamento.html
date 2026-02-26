@@ -3,18 +3,19 @@
 
 <h1 class="titulo">Fechamento</h1>
 
-<form method="POST" action="/salvar">
+<form id="formFechamento" method="POST" action="/salvar">
 <input type="hidden" name="tipo" value="fechamento">
 
 <div class="grid">
     {% for produto in produtos %}
     <div class="card">
-
         <span>{{ produto[1] }}</span>
 
         <div class="contador">
             <button type="button" onclick="diminuir({{ produto[0] }})">-</button>
+
             <span class="numero" id="display_{{ produto[0] }}">0</span>
+
             <button type="button" onclick="aumentar({{ produto[0] }})">+</button>
 
             <input type="hidden"
@@ -22,32 +23,22 @@
                    name="produto_{{ produto[0] }}"
                    value="0">
         </div>
-
     </div>
     {% endfor %}
 </div>
 
-<div id="mensagem" style="display:none; color: green; font-weight:bold; margin-bottom:15px;">
-Relatório gerado com sucesso!
-</div>
-
-<button type="submit" class="botao-principal" onclick="mostrarMensagem()">
+<button type="button" class="botao-principal" onclick="abrirPdf('formFechamento')">
 Gerar Fechamento
 </button>
 
 </form>
 
 <script>
-
 function aumentar(id){
     let input = document.getElementById("produto_"+id);
     let display = document.getElementById("display_"+id);
-
-    if(!input || !display) return;
-
     let valor = parseInt(input.value) || 0;
     valor++;
-
     input.value = valor;
     display.innerText = valor;
 }
@@ -55,11 +46,7 @@ function aumentar(id){
 function diminuir(id){
     let input = document.getElementById("produto_"+id);
     let display = document.getElementById("display_"+id);
-
-    if(!input || !display) return;
-
     let valor = parseInt(input.value) || 0;
-
     if(valor > 0){
         valor--;
         input.value = valor;
@@ -67,11 +54,11 @@ function diminuir(id){
     }
 }
 
-</script>
-
-<script>
-function mostrarMensagem(){
-    document.getElementById("mensagem").style.display = "block";
+function abrirPdf(formId){
+    const form = document.getElementById(formId);
+    form.target = "_blank";
+    form.submit();
+    form.target = "";
 }
 </script>
 
