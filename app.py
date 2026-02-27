@@ -209,24 +209,31 @@ def salvar():
     conn.close()
 
     return redirect(f"/pdf/{tipo}/{data}")
-# ======================================
-# ROTA PDF
-# ======================================
 
+
+# ======================================
+#GERAR PDF
+# ======================================
 @app.route("/pdf/<tipo>/<data>")
 @login_required
 def gerar_pdf(tipo, data):
 
     pdf_buffer = gerar_pdf_relatorio(data, tipo)
 
-    return Response(
+    response = Response(
         pdf_buffer,
-        mimetype="application/pdf",
-        headers={
-            "Content-Disposition":
-            f"inline; filename=relatorio_{tipo}_{data}.pdf"
-        }
+        mimetype="application/pdf"
     )
+
+    response.headers["Content-Disposition"] = \
+        f"inline; filename=relatorio_{tipo}_{data}.pdf"
+
+    # 🔥 FORÇA NÃO CACHEAR
+    response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"
+    response.headers["Pragma"] = "no-cache"
+    response.headers["Expires"] = "0"
+
+    return response
 
 # ======================================
 # PRODUTOS
