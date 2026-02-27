@@ -170,13 +170,6 @@ def salvar():
     conn = get_connection()
     cur = conn.cursor()
 
-    # 🔥 LIMPA SOMENTE DA FILIAL LOGADA
-    cur.execute("""
-        DELETE FROM operacao_diaria
-        WHERE data = %s
-        AND filial_id = %s
-    """, (data, filial_id))
-
     for key in request.form:
         if key.startswith("produto_"):
             produto_id = key.split("_")[1]
@@ -185,17 +178,23 @@ def salvar():
             if quantidade > 0:
 
                 if tipo == "producao":
+
                     cur.execute("""
                         INSERT INTO operacao_diaria
                         (data, produto_id, filial_id, produzido, vendido, enviado_filial, sobra_real)
                         VALUES (%s, %s, %s, %s, 0, 0, 0)
+                        ON CONFLICT (data, produto_id, filial_id)
+                        DO UPDATE SET produzido = EXCLUDED.produzido
                     """, (data, produto_id, filial_id, quantidade))
 
                 else:
+
                     cur.execute("""
                         INSERT INTO operacao_diaria
                         (data, produto_id, filial_id, produzido, vendido, enviado_filial, sobra_real)
                         VALUES (%s, %s, %s, 0, 0, 0, %s)
+                        ON CONFLICT (data, produto_id, filial_id)
+                        DO UPDATE SET sobra_real = EXCLUDED.sobra_real
                     """, (data, produto_id, filial_id, quantidade))
 
     conn.commit()
