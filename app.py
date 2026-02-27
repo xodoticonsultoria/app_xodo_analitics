@@ -165,7 +165,11 @@ def salvar():
     else:
         data = datetime.now().date()
 
-    filial_id = session["filial_id"]
+    filial_id = session.get("filial_id")
+
+    if not filial_id:
+        session.clear()
+        return redirect("/login")
 
     conn = get_connection()
     cur = conn.cursor()
@@ -310,12 +314,11 @@ def login():
         """, (username,))
 
         user = cur.fetchone()
-        conn.close()
 
         if user and check_password_hash(user[2], senha):
             session["user_id"] = user[0]
             session["username"] = user[1]
-            session["filial_id"] = user[3]
+            session["filial_id"] = user[3]  # ← ESSA LINHA É OBRIGATÓRIA
             session["filial_nome"] = user[4]
 
             return redirect("/")
