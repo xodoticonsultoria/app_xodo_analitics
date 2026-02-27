@@ -49,6 +49,8 @@ def gerar_pdf_relatorio(data, tipo):
     conn = get_connection()
     cur = conn.cursor()
 
+    filial_id = session.get("filial_id")
+
     if tipo == "producao":
         cur.execute("""
             SELECT p.nome, o.produzido
@@ -57,7 +59,8 @@ def gerar_pdf_relatorio(data, tipo):
             WHERE o.data = %s
             AND o.filial_id = %s
             AND o.produzido > 0
-        """, (data, session["filial_id"]))
+            ORDER BY p.nome
+        """, (data, filial_id))
     else:
         cur.execute("""
             SELECT p.nome, o.sobra_real
@@ -66,17 +69,21 @@ def gerar_pdf_relatorio(data, tipo):
             WHERE o.data = %s
             AND o.filial_id = %s
             AND o.sobra_real > 0
-        """, (data, session["filial_id"]))
+            ORDER BY p.nome
+        """, (data, filial_id))
 
     dados = cur.fetchall()
     conn.close()
+
+    # Se não tiver nada selecionado
+    if not dados:
+        dados = [["Nenhum produto selecionado", "0"]]
 
     buffer = BytesIO()
     doc = SimpleDocTemplate(buffer)
     elements = []
     styles = getSampleStyleSheet()
 
-    # Logo
     logo_path = os.path.join(app.root_path, "static", "logo-pdf.png")
     if os.path.exists(logo_path):
         logo = Image(logo_path, width=2*inch, height=1*inch)
@@ -84,9 +91,7 @@ def gerar_pdf_relatorio(data, tipo):
 
     elements.append(Spacer(1, 0.3 * inch))
 
-    # FUSO BRASIL
-    fuso = pytz.timezone("America/Sao_Paulo")
-    agora = datetime.now(fuso)
+    agora = datetime.now()
 
     elements.append(Paragraph(f"<b>Lista {tipo.capitalize()}</b>", styles['Title']))
     elements.append(Paragraph(f"Data: {agora.strftime('%d/%m/%Y')}", styles['Normal']))
@@ -95,7 +100,6 @@ def gerar_pdf_relatorio(data, tipo):
         f"Operador: {session.get('username')} | Filial: {session.get('filial_nome')}",
         styles['Normal']
     ))
-
     elements.append(Spacer(1, 0.4 * inch))
 
     tabela_dados = [["Produto", "Quantidade"]]
@@ -160,52 +164,57 @@ def salvar():
 
     tipo = request.form.get("tipo")
 
-    if tipo == "producao":
-        data = datetime.now().date() + timedelta(days=1)
-    else:
-        data = datetime.now().date()
-
     filial_id = session.get("filial_id")
-
     if not filial_id:
         session.clear()
         return redirect("/login")
 
+    data = datetime.now().date()
+
     conn = get_connection()
     cur = conn.cursor()
 
+    # 🔥 APAGA TUDO DAQUELE DIA + FILIAL + TIPO
+    if tipo == "producao":
+        cur.execute("""
+            DELETE FROM operacao_diaria
+            WHERE data = %s
+            AND filial_id = %s
+        """, (data, filial_id))
+    else:
+        cur.execute("""
+            DELETE FROM operacao_diaria
+            WHERE data = %s
+            AND filial_id = %s
+        """, (data, filial_id))
+
+    # 🔥 INSERE SOMENTE O QUE FOI SELECIONADO
     for key in request.form:
         if key.startswith("produto_"):
+
             produto_id = key.split("_")[1]
             quantidade = int(request.form[key])
 
             if quantidade > 0:
 
                 if tipo == "producao":
-
                     cur.execute("""
                         INSERT INTO operacao_diaria
-                        (data, produto_id, filial_id, produzido, vendido, enviado_filial, sobra_real)
+                        (data, filial_id, produto_id, produzido, vendido, enviado_filial, sobra_real)
                         VALUES (%s, %s, %s, %s, 0, 0, 0)
-                        ON CONFLICT (data, produto_id, filial_id)
-                        DO UPDATE SET produzido = EXCLUDED.produzido
-                    """, (data, produto_id, filial_id, quantidade))
+                    """, (data, filial_id, produto_id, quantidade))
 
                 else:
-
                     cur.execute("""
                         INSERT INTO operacao_diaria
-                        (data, produto_id, filial_id, produzido, vendido, enviado_filial, sobra_real)
+                        (data, filial_id, produto_id, produzido, vendido, enviado_filial, sobra_real)
                         VALUES (%s, %s, %s, 0, 0, 0, %s)
-                        ON CONFLICT (data, produto_id, filial_id)
-                        DO UPDATE SET sobra_real = EXCLUDED.sobra_real
-                    """, (data, produto_id, filial_id, quantidade))
+                    """, (data, filial_id, produto_id, quantidade))
 
     conn.commit()
     conn.close()
 
     return redirect(f"/pdf/{tipo}/{data}")
-
 # ======================================
 # ROTA PDF
 # ======================================
