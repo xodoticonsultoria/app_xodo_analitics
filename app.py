@@ -176,20 +176,11 @@ def salvar():
     cur = conn.cursor()
 
     # 🔥 APAGA TUDO DAQUELE DIA + FILIAL + TIPO
-    if tipo == "producao":
-        cur.execute("""
-            DELETE FROM operacao_diaria
-            WHERE data = %s
-            AND filial_id = %s
-            AND produzido > 0
-        """, (data, filial_id))
-    else:
-        cur.execute("""
-            DELETE FROM operacao_diaria
-            WHERE data = %s
-            AND filial_id = %s
-            AND sobra_real > 0
-        """, (data, filial_id))
+    cur.execute("""
+        DELETE FROM operacao_diaria
+        WHERE data = %s
+        AND filial_id = %s
+    """, (data, filial_id))
 
     # 🔥 INSERE SOMENTE O QUE FOI SELECIONADO
     for key in request.form:
