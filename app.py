@@ -54,15 +54,19 @@ def gerar_pdf_relatorio(data, tipo):
             SELECT p.nome, o.produzido
             FROM operacao_diaria o
             JOIN produtos p ON p.id = o.produto_id
-            WHERE o.data = %s AND o.produzido > 0
-        """, (data,))
+            WHERE o.data = %s
+            AND o.filial_id = %s
+            AND o.produzido > 0
+        """, (data, session["filial_id"]))
     else:
         cur.execute("""
             SELECT p.nome, o.sobra_real
             FROM operacao_diaria o
             JOIN produtos p ON p.id = o.produto_id
-            WHERE o.data = %s AND o.sobra_real > 0
-        """, (data,))
+            WHERE o.data = %s
+            AND o.filial_id = %s
+            AND o.sobra_real > 0
+        """, (data, session["filial_id"]))
 
     dados = cur.fetchall()
     conn.close()
@@ -153,7 +157,7 @@ def fechamento():
 @app.route("/salvar", methods=["POST"])
 @login_required
 def salvar():
-    print("FORM RECEBIDO:", request.form)
+
     tipo = request.form.get("tipo")
 
     if tipo == "producao":
@@ -161,14 +165,17 @@ def salvar():
     else:
         data = datetime.now().date()
 
+    filial_id = session["filial_id"]
+
     conn = get_connection()
     cur = conn.cursor()
 
-    # 🔥 LIMPA O DIA ANTES (evita duplicação)
+    # 🔥 LIMPA SOMENTE DA FILIAL LOGADA
     cur.execute("""
         DELETE FROM operacao_diaria
         WHERE data = %s
-    """, (data,))
+        AND filial_id = %s
+    """, (data, filial_id))
 
     for key in request.form:
         if key.startswith("produto_"):
@@ -176,18 +183,20 @@ def salvar():
             quantidade = int(request.form[key])
 
             if quantidade > 0:
+
                 if tipo == "producao":
                     cur.execute("""
-                        INSERT INTO operacao_diaria 
-                        (data, produto_id, produzido, vendido, enviado_filial, sobra_real)
-                        VALUES (%s, %s, %s, 0, 0, 0)
-                    """, (data, produto_id, quantidade))
+                        INSERT INTO operacao_diaria
+                        (data, produto_id, filial_id, produzido, vendido, enviado_filial, sobra_real)
+                        VALUES (%s, %s, %s, %s, 0, 0, 0)
+                    """, (data, produto_id, filial_id, quantidade))
+
                 else:
                     cur.execute("""
-                        INSERT INTO operacao_diaria 
-                        (data, produto_id, produzido, vendido, enviado_filial, sobra_real)
-                        VALUES (%s, %s, 0, 0, 0, %s)
-                    """, (data, produto_id, quantidade))
+                        INSERT INTO operacao_diaria
+                        (data, produto_id, filial_id, produzido, vendido, enviado_filial, sobra_real)
+                        VALUES (%s, %s, %s, 0, 0, 0, %s)
+                    """, (data, produto_id, filial_id, quantidade))
 
     conn.commit()
     conn.close()
