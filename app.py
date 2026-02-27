@@ -303,7 +303,7 @@ def login():
         cur = conn.cursor()
 
         cur.execute("""
-            SELECT u.id, u.username, u.senha, f.nome
+            SELECT u.id, u.username, u.senha, f.id, f.nome
             FROM usuarios u
             JOIN filiais f ON f.id = u.filial_id
             WHERE u.username = %s
@@ -315,7 +315,9 @@ def login():
         if user and check_password_hash(user[2], senha):
             session["user_id"] = user[0]
             session["username"] = user[1]
-            session["filial_nome"] = user[3]
+            session["filial_id"] = user[3]
+            session["filial_nome"] = user[4]
+
             return redirect("/")
 
         flash("Usuário ou senha inválidos")
