@@ -11,6 +11,7 @@ from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib.units import inch
 from reportlab.platypus import TableStyle
 from io import BytesIO
+import time
 
 from werkzeug.security import generate_password_hash, check_password_hash
 from dotenv import load_dotenv
@@ -208,7 +209,7 @@ def salvar():
     conn.commit()
     conn.close()
 
-    return redirect(f"/pdf/{tipo}/{data}")
+    return redirect(f"/pdf/{tipo}/{data}?v={int(time.time())}")
 
 
 # ======================================
