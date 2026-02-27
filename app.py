@@ -91,7 +91,8 @@ def gerar_pdf_relatorio(data, tipo):
 
     elements.append(Spacer(1, 0.3 * inch))
 
-    agora = datetime.now()
+    fuso_brasil = pytz.timezone("America/Sao_Paulo")
+    agora = datetime.now(fuso_brasil)
 
     elements.append(Paragraph(f"<b>Lista {tipo.capitalize()}</b>", styles['Title']))
     elements.append(Paragraph(f"Data: {agora.strftime('%d/%m/%Y')}", styles['Normal']))
@@ -180,12 +181,14 @@ def salvar():
             DELETE FROM operacao_diaria
             WHERE data = %s
             AND filial_id = %s
+            AND produzido > 0
         """, (data, filial_id))
     else:
         cur.execute("""
             DELETE FROM operacao_diaria
             WHERE data = %s
             AND filial_id = %s
+            AND sobra_real > 0
         """, (data, filial_id))
 
     # 🔥 INSERE SOMENTE O QUE FOI SELECIONADO
