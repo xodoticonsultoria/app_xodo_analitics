@@ -153,7 +153,7 @@ def fechamento():
 @app.route("/salvar", methods=["POST"])
 @login_required
 def salvar():
-
+    print("FORM RECEBIDO:", request.form)
     tipo = request.form.get("tipo")
 
     if tipo == "producao":
